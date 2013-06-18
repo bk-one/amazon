@@ -3,14 +3,14 @@ class CharitiesSwiper
     @element = document.getElementById(element)
     # @element = $("\##{element}")
     @charities = new Charities()
-    @create_charities()
-    @create_swiper()
+    @createCharities()
+    @createSwiper()
 
-  create_charities: ->
+  createCharities: ->
     for c in @charities.all()
-      alert c.name
+      @elementForCharity(c).appendTo($(".swipe-wrap"))
 
-  create_swiper: ->
+  createSwiper: ->
     @swiper = new Swipe(@element,
       startSlide: 0
       speed: 400
@@ -21,4 +21,7 @@ class CharitiesSwiper
       # callback: -> (index, elem) ...
       # transitionEnd: -> (index, elem) ...
     )
+
+  elementForCharity: (c) ->
+    $("<div><img src='res/#{c.image}'></div>")
 
