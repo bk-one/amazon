@@ -1,14 +1,13 @@
 class CharitiesSwiper
   constructor: (element) ->
     @element = document.getElementById(element)
-    # @element = $("\##{element}")
     @charities = new Charities()
     @createCharities()
     @createSwiper()
 
   createCharities: ->
     for c in @charities.all()
-      @elementForCharity(c).appendTo($(".swipe-wrap"))
+      @elementForCharity(c).appendTo($(".swipe-wrap")) # TODO
 
   createSwiper: ->
     @swiper = new Swipe(@element,
