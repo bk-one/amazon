@@ -27,21 +27,23 @@
     </head>
     <body>
         <div class="app">
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <form action="http://amazon.de/s/ref=nb_sb_noss" name="site-search">
-            <input type="hidden" name="tag" value="blog0aa-21" />
-            <input type="text" name="field-keywords" />
-            <input type="submit" />
-          </form>
+          <div id='slider' class='swipe'>
+            <div class='swipe-wrap'>
+              <div><img src="res/frog1.jpg"/></div>
+              <div><img src="res/frog2.jpg"/></div>
+            </div>
+          </div>
         </div>
-        <script type="text/javascript" src="cordova.js"></script>
-        <script type="text/javascript" src="js/index.js"></script>
-        <script type="text/javascript">
-            app.initialize();
-        </script>
+      <div class="input">
+        <input type="text" />
+      </div>
+      <script type="text/javascript" src="cordova.js"></script>
+      <script type="text/javascript" src="js/zepto.js"></script>
+      <script type="text/javascript" src="js/swipe.js"></script>
+      <script type="text/javascript" src="js/index.js"></script>
+      <script type="text/javascript">
+        app.initialize();
+        window.mySwipe = Swipe(document.getElementById('slider'));
+      </script>
     </body>
 </html>
