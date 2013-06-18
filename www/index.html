@@ -36,14 +36,23 @@
         </div>
       <div class="input">
         <input type="text" />
+        <div id="text">?</div>
       </div>
       <script type="text/javascript" src="cordova.js"></script>
       <script type="text/javascript" src="js/zepto.js"></script>
       <script type="text/javascript" src="js/swipe.js"></script>
       <script type="text/javascript" src="js/index.js"></script>
       <script type="text/javascript">
-        app.initialize();
-        window.mySwipe = Swipe(document.getElementById('slider'));
+        window.mySwipe = new Swipe(document.getElementById('slider'), {
+          startSlide: 0,
+          speed: 400,
+          auto: 3000,
+          continuous: false,
+          disableScroll: true,
+          stopPropagation: false,
+          callback: function(index, elem) {document.getElementById('text').innerHTML = index;},
+          transitionEnd: function(index, elem) {}
+        });
       </script>
     </body>
 </html>
