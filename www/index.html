@@ -29,12 +29,30 @@
     <script type="text/javascript" src="js/lib/swipe.js"></script>
     <script type="text/javascript" src="js/app/cordova-loader.js"></script>
     <script type="text/javascript" src="js/app/greencart.js"></script>
-    <body onload="loadCordova()">
-      <script type="text/javascript">
-        document.addEventListener("deviceready", function(){ new Greencart() }, false);
+    <script type="text/javascript" src="js/app/charities.js"></script>
+    <script type="text/javascript" src="js/app/charities_swiper.js"></script>
+    <body onload="init()">
+     <script type="text/javascript">
+        var startApp = function() {
+          var app = new Greencart();
+        }
+
+        var init = function() {
+
+          // In case we're trying things out in chrome
+          if(navigator.userAgent.indexOf("Chrome") > 0) {
+            startApp()
+
+          // We're in phonegap
+          } else {
+            loadCordova()
+          }
+        }
+
+        document.addEventListener("deviceready", startApp, false);
       </script>
         <div class="app">
-          <div id='slider' class='swipe'>
+          <div id='swiper' class='swipe'>
             <div class='swipe-wrap'>
               <div><img src="res/frog1.jpg"/></div>
               <div><img src="res/frog2.jpg"/></div>
