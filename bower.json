@@ -1,0 +1,29 @@
+{
+  "name": "Greencart",
+  "version": "0.0.0",
+  "authors": [
+    "adamvert <ab@adam-butler.com>"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "zepto": "1.0",
+    "backbone-amd": "1.1.0",
+    "require-cs": "~0.4.3",
+    "requirejs-text": "~2.0.4",
+    "requirejs": "~2.1.3",
+    "almond": "~0.2.3",
+    "lodash": "~2.2",
+    "hammerjs": "~1.0.5",
+    "backbone.hammer": "~0.1",
+    "backbone.localStorage": "~1.1.7",
+    "underscore": "~1.4"
+  }
+}

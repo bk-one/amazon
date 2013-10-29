@@ -1,0 +1,76 @@
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+        <link rel="stylesheet" type="text/css" href="css/base.css" />
+        <script>document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1"></' + 'script>')</script>
+        <title>Greencart</title>
+    </head>
+    <body>
+        <div id="app" class="app">
+        </div>
+        <script type="text/javascript">
+            assocs = [
+                {
+                    name: "Oro Verde",
+                    backgroundURL: "/images/oro-verde-bg.jpg",
+                    logoURL: "/images/oro-verde-logo.png",
+                    description: "Here is the description"
+                },
+                {
+                    name: "Unicef",
+                    backgroundURL: "/images/unicef-bg.jpg",
+                    logoURL: "/images/unicef-logo.png",
+                    description: "Here is the description"
+                }
+            ];
+        </script>
+        <script>
+        // can't figure out how to avoid repeating contents of config.js here :(
+        // https://github.com/jrburke/requirejs/issues/354 might help...
+        var require = {
+          paths: {
+
+            // Third-part libs
+            jquery: '../bower_components/zepto/zepto',
+            underscore: '../bower_components/lodash/dist/lodash.underscore',
+            backbone: '../bower_components/backbone-amd/backbone',
+            cs: '../bower_components/require-cs/cs',
+            'coffee-script': '../bower_components/require-cs/coffee-script',
+            text: '../bower_components/requirejs-text/text',
+            localstorage: '../bower_components/backbone.localStorage/backbone.localStorage',
+            hammer: '../bower_components/hammerjs/dist/hammer',
+            'jquery.hammer': '../bower_components/hammerjs/plugins/jquery.hammer',
+            'backbone.hammer': '../bower_components/backbone.hammer/backbone.hammer'
+          },
+          // Shims for non-AMD modules
+          shim: {
+            underscore: {
+              exports: '_'
+            },
+            // this shim actually for zepto...
+            jquery: {
+              exports: '$'
+            },
+            localstorage: {
+              deps: ['backbone'],
+              exports: 'Backbone.LocalStorage'
+            },
+            hammer: {
+                exports: 'Hammer'
+            },
+            'jquery.hammer': {
+                deps: ['hammer', 'jquery']
+            },
+            'backbone.hammer': {
+                deps: ['jquery.hammer']
+            }
+          },
+        };
+        </script>
+        <script data-main="../scripts/app.js" src="../bower_components/requirejs/require.js"></script>
+        <!--script src="js/app.js"></script-->
+    </body>
+</html>
