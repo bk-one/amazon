@@ -1,2 +1,6 @@
 iphone
 www/js/app/**/*.js
+.sass-cache/
+bower_components/
+node_modules/
+cordova/platforms/
