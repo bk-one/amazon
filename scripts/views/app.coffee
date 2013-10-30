@@ -59,12 +59,24 @@ define (require) ->
     swipe: (isFwd = true) ->
       if isFwd and @getNextView()
         @currentView.removeClass('current').addClass('prev')
-        @getNextView().removeClass('next').addClass('current', @clearPrevView, this)
-        @currentView = @getNextView()
+        @getNextView().removeClass('next').addClass(
+          'current'
+          ->
+            @clearPrevView
+            @currentView = @getNextView()
+          this
+        )
+
       else if not isFwd and @getPrevView()
         @currentView.removeClass('current').addClass('next')
-        @getPrevView().removeClass('prev').addClass('current', @clearNextView, this)
-        @currentView = @getPrevView()
+        @getPrevView().removeClass('prev').addClass(
+          'current'
+          ->
+            @clearNextView
+            @currentView = @getPrevView()
+          this
+        )
+      this
 
     swipeFwd: =>
       @swipe(true)
