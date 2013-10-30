@@ -17,6 +17,9 @@ define (require) ->
                 <input type="submit" class="amazon-submit" value="Go">
               </form>
               <img src="<%= logoURL %>" class="logo">
+              <div class="description-holder">
+                <div class="description"><%= description %></div>
+              </div>
             """
 
     initialize: ->
@@ -30,6 +33,12 @@ define (require) ->
         false
       )
       this
+
+    showDescription: ->
+      @$el.find('.description-holder').addClass('description-holder-visible')
+
+    hideDescription: ->
+      @$el.find('.description-holder').removeClass('description-holder-visible')
 
   _.extend AssociateView.prototype, transformUtils
 

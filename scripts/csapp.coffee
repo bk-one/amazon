@@ -8,6 +8,8 @@ define (require) ->
     collections: {}
     views: {}
 
+  StatusBar.styleLightContent();
+
   associates = new Associates()
   AppData.associates = associates
 

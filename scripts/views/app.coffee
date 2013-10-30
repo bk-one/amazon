@@ -17,6 +17,8 @@ define (require) ->
 
       @$el.hammer().on 'swipeleft', @swipeFwd
       @$el.hammer().on 'swiperight', @swipeBack
+      @$el.hammer().on 'swipeup', @swipeUp
+      @$el.hammer().on 'swipedown', @swipeDown
 
     addOne: (associate) ->
       view = new AssociateView(model: associate)
@@ -34,8 +36,12 @@ define (require) ->
 
       @$el.append view.el
 
+    #
+    # Browser opening stuff
+    #
+
     openBrowser: (associateId, searchTerm) ->
-      @browser = window.open('http://www.amazon.de/gp/aw/s/?k='+searchTerm, '_blank', 'location=no')
+      @browser = window.open('http://www.amazon.de/gp/aw/s/?k='+searchTerm, '_blank', 'location=no,closebuttoncaption=< Back to Greencart')
       @browser.addEventListener('loadstop', @insertGreencartGraphic)
       @browser.addEventListener('exit', @removeBrowserListeners)
 
@@ -53,6 +59,11 @@ define (require) ->
     removeBrowserListeners: =>
       @browser.removeEventListener('loadstop', insertGreencartGraphic)
       @browser.removeEventListener('exit', removeBrowserListeners)
+      @browser = null
+
+    #
+    # Associate view manipulation
+    #
 
     getCurrentView: ->
       @currentView ?= @associateViews[0]
@@ -104,6 +115,12 @@ define (require) ->
 
     swipeBack: =>
       @swipe(false)
+
+    swipeUp: =>
+      @currentView.showDescription()
+
+    swipeDown: =>
+      @currentView.hideDescription()
 
   _.extend AppView.prototype, transformUtils
   AppView
