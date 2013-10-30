@@ -119,7 +119,12 @@ module.exports = (grunt) ->
       cordovaDeploy:
         command: 'cd cordova; cordova build ios'
       cordovaEmulate:
-        command: 'cd cordova; cordova emulate ios'
+        # command: 'cd cordova; cordova emulate ios'
+        # above command doesn't work in Cordova 3.1
+        # https://issues.apache.org/jira/browse/CB-4990
+        # temporary workaround:
+        command: 'cd cordova/platforms/ios/cordova; ./emulate'
+
 
   grunt.loadNpmTasks "grunt-contrib-clean"
   grunt.loadNpmTasks "grunt-contrib-copy"
@@ -135,5 +140,6 @@ module.exports = (grunt) ->
   # -------
   grunt.registerTask "default", ["watch"]
   grunt.registerTask "build", ["clean", "requirejs", "sass", "copy", "shell:cordovaDeploy", "shell:cordovaEmulate"]
+  grunt.registerTask "emulate", ["shell:cordovaEmulate"]
   grunt.registerTask "test", ["mocha"]
 
