@@ -10,4 +10,8 @@
     <content src="index.html" />
     <access origin="*" />
     <preference name="DisallowOverscroll" value="true" />
+
+    <feature name="InAppBrowser">
+        <param name="ios-package" value="CDVInAppBrowser" />
+    </feature>
 </widget>

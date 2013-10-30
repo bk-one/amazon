@@ -20,6 +20,7 @@ define (require) ->
 
     addOne: (associate) ->
       view = new AssociateView(model: associate)
+      @listenTo view, 'search', @openBrowser
       view.render()
       @associateViews.push view
       if @isCurrentView(view)
@@ -32,6 +33,26 @@ define (require) ->
         view.addClass 'hidden'
 
       @$el.append view.el
+
+    openBrowser: (associateId, searchTerm) ->
+      @browser = window.open('http://www.amazon.de/gp/aw/s/?k='+searchTerm, '_blank', 'location=no')
+      @browser.addEventListener('loadstop', @insertGreencartGraphic)
+      @browser.addEventListener('exit', @removeBrowserListeners)
+
+    insertGreencartGraphic: =>
+      @browser.insertCSS(
+        code: """
+        i.a-icon.a-nav-cart {
+          -webkit-background-size: cover !important;
+          background-image:url("http://www.adam-butler.com/images/amazon-greencart.png") !important;
+          background-position: 0 0 !important;
+        }
+        """
+      )
+
+    removeBrowserListeners: =>
+      @browser.removeEventListener('loadstop', insertGreencartGraphic)
+      @browser.removeEventListener('exit', removeBrowserListeners)
 
     getCurrentView: ->
       @currentView ?= @associateViews[0]

@@ -25,6 +25,10 @@ define (require) ->
     render: ->
       @$el.html @template(@model.toJSON())
       @$el.css 'backgroundImage', 'url('+@model.get('backgroundURL')+')'
+      @$el.find('.amazon-form').on('submit', =>
+        @trigger('search', '', $('.amazon-text').val()) if $('.amazon-text').val().length > 0
+        false
+      )
       this
 
   _.extend AssociateView.prototype, transformUtils

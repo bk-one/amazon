@@ -1,5 +1,6 @@
-// Requiring and return the CoffeeScript App module.
-// Nested requires mean we can use a separate config.js
-require(['cs!csapp'], function (App) {
-  return App;
-});
+document.addEventListener('deviceready', function() {
+    // Requiring and return the CoffeeScript App module.
+    require(['cs!csapp'], function (App) {
+      return App;
+    });
+}, false);
