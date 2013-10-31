@@ -47,13 +47,29 @@ body {
     position: absolute;
     top: 0;
 
-    -webkit-transition: left 0.65s cubic-bezier(0.23,1,0.32,1);
-
+    -webkit-transition: left 0.65s cubic-bezier(0.23,1,0.32,1), top 0.65s cubic-bezier(0.23,1,0.32,1);
     -webkit-transform: translateZ(0);
 
-    /* background image url is set in the template */
-    background-position: center top;
+    overflow: hidden;
 
+    .bg-holder {
+        height: 110%;
+        width: 110%;
+        position: absolute;
+        top: 0;
+        margin: 0 -5%;
+        -webkit-transform: translateZ(0);
+        /* background image url is set in the template */
+        background-position: center top;
+        background-size: cover;
+        &.blurred {
+            -webkit-filter: blur(6px);
+            -webkit-transition: opacity 0.65s linear;
+            opacity: 0;
+            z-index: 3;
+            pointer-events: none;
+        }
+    }
     h1 {
         color: $green;
         text-transform: uppercase;
@@ -62,6 +78,8 @@ body {
         text-align: center;
         padding: $half-step;
         margin: 0;
+        position: relative;
+        z-index: 5;
     }
 
     .logo {
@@ -103,10 +121,12 @@ body {
     }
 
     .description-holder {
-        background-color: rgba(220,220,220,0.9);
-        padding: 1em;
+        background-color: rgba(0,0,0,0.4);
+        margin: .5em;
+        padding: .5em;
         position: absolute;
-        color: #333;
+        z-index: 10;
+        color: #eee;
         height: 85%;
         overflow-y: scroll;
         top: 100%;

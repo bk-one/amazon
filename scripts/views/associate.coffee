@@ -11,14 +11,17 @@ define (require) ->
     className: "associate"
 
     templ:  """
-              <h1><%= name %></h1>
-              <form action="" id="amazon" class="amazon-form">
-                <input type="text" class="amazon-text" id="amazon-text" placeholder="What are you looking for?">
-                <input type="submit" class="amazon-submit" value="Go">
-              </form>
-              <img src="<%= logoURL %>" class="logo">
-              <div class="description-holder">
-                <div class="description"><%= description %></div>
+              <div class="bg-holder blurred"></div>
+              <div class="bg-holder"></div>
+                <h1><%= name %></h1>
+                <form action="" id="amazon" class="amazon-form">
+                  <input type="text" class="amazon-text" id="amazon-text" placeholder="What are you looking for?">
+                  <input type="submit" class="amazon-submit" value="Go">
+                </form>
+                <img src="<%= logoURL %>" class="logo">
+                <div class="description-holder">
+                  <div class="description"><%= description %></div>
+                </div>
               </div>
             """
 
@@ -27,7 +30,7 @@ define (require) ->
 
     render: ->
       @$el.html @template(@model.toJSON())
-      @$el.css 'backgroundImage', 'url('+@model.get('backgroundURL')+')'
+      @$el.find('.bg-holder').css 'backgroundImage', 'url('+@model.get('backgroundURL')+')'
       @$el.find('.amazon-form').on('submit', =>
         @trigger('search', '', $('.amazon-text').val()) if $('.amazon-text').val().length > 0
         false
@@ -35,9 +38,13 @@ define (require) ->
       this
 
     showDescription: ->
+      @$el.find('.blurred').css 'opacity', '1'
+      @$el.find('bg-holder').css 'top', '-10%'
       @$el.find('.description-holder').addClass('description-holder-visible')
 
     hideDescription: ->
+      @$el.find('.blurred').css 'opacity', '0'
+      @$el.find('bg-holder').css 'top', '0'
       @$el.find('.description-holder').removeClass('description-holder-visible')
 
   _.extend AssociateView.prototype, transformUtils
