@@ -39,12 +39,12 @@ define (require) ->
 
     showDescription: ->
       @$el.find('.blurred').css 'opacity', '1'
-      @$el.find('bg-holder').css 'top', '-10%'
+      @$el.find('.bg-holder').css 'top', '-10%'
       @$el.find('.description-holder').addClass('description-holder-visible')
 
     hideDescription: ->
       @$el.find('.blurred').css 'opacity', '0'
-      @$el.find('bg-holder').css 'top', '0'
+      @$el.find('.bg-holder').css 'top', '0'
       @$el.find('.description-holder').removeClass('description-holder-visible')
 
   _.extend AssociateView.prototype, transformUtils
