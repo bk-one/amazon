@@ -31,8 +31,9 @@ define (require) ->
     render: ->
       @$el.html @template(@model.toJSON())
       @$el.find('.bg-holder').css 'backgroundImage', 'url('+@model.get('backgroundURL')+')'
+      @$searchField = @$el.find('.amazon-text')
       @$el.find('.amazon-form').on('submit', =>
-        @trigger('search', '', $('.amazon-text').val()) if $('.amazon-text').val().length > 0
+        @trigger('search', @model.get('tag'), @$searchField.val()) if @$searchField.val().length > 0
         false
       )
       this
