@@ -18,7 +18,6 @@ define (require) ->
                   <input type="text" class="amazon-text" id="amazon-text" placeholder="What are you looking for?">
                   <input type="submit" class="amazon-submit" value="Go">
                 </form>
-                <img src="<%= logoURL %>" class="logo">
                 <div class="description-holder">
                   <div class="description"><%= description %></div>
                 </div>
