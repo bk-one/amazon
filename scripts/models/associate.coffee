@@ -11,6 +11,7 @@ define (require) ->
       backgroundURL: ""
       logoURL: ""
       description: "Description goes here"
+      tag: "amazon-tag"
 
     getLogoURL: ->
       @get('logoURL')
