@@ -87,29 +87,39 @@ define (require) ->
       @associateViews.indexOf(view) == @associateViews.indexOf(@getCurrentView()) - 1
 
     clearPrevView: =>
-      @getPrevView().addClass('hidden').removeClass('prev')
+      @getPrevView()?.addClass('hidden').removeClass('prev')
 
     clearNextView: =>
-      @getNextView().addClass('hidden').removeClass('next')
+      @getNextView()?.addClass('hidden').removeClass('next')
 
-    swipe: (isFwd = true) ->
-      if isFwd and @getNextView()
+    setPrevView: (prevView) =>
+      prevView = prevView ? @getPrevView()
+      prevView?.removeClass('hidden').addClass('prev')
+
+    setNextView: (nextView) =>
+      nextView = nextView ? @getNextView()
+      nextView?.removeClass('hidden').addClass('next')
+
+    swipe: (fwd = true) ->
+      if fwd and @getNextView()
         @currentView.removeClass('current').addClass('prev')
-        @getNextView().removeClass('next').addClass(
+        @getNextView()?.removeClass('next').addClass(
           'current'
           ->
-            @clearPrevView
+            @clearPrevView()
             @currentView = @getNextView()
+            @setNextView()
           this
         )
 
-      else if not isFwd and @getPrevView()
+      else if not fwd and @getPrevView()
         @currentView.removeClass('current').addClass('next')
-        @getPrevView().removeClass('prev').addClass(
+        @getPrevView()?.removeClass('prev').addClass(
           'current'
           ->
-            @clearNextView
+            @clearNextView()
             @currentView = @getPrevView()
+            @setPrevView()
           this
         )
       this
