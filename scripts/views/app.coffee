@@ -40,8 +40,9 @@ define (require) ->
     # Browser opening stuff
     #
 
-    openBrowser: (associateId, searchTerm) ->
-      @browser = window.open('http://www.amazon.de/gp/aw/s/?k='+searchTerm, '_blank', 'location=no,closebuttoncaption=< Back to Greencart')
+    openBrowser: (associateTag, searchTerm) ->
+      url = 'http://www.amazon.de/gp/aw/s/?k='+searchTerm+'&tag='+associateTag
+      @browser = window.open(url, '_blank', 'location=no,transitionstyle=fliphorizontal,closebuttoncaption=< Back to Greencart')
       @browser.addEventListener('loadstop', @insertGreencartGraphic)
       @browser.addEventListener('exit', @removeBrowserListeners)
 
@@ -57,8 +58,8 @@ define (require) ->
       )
 
     removeBrowserListeners: =>
-      @browser.removeEventListener('loadstop', insertGreencartGraphic)
-      @browser.removeEventListener('exit', removeBrowserListeners)
+      @browser.removeEventListener('loadstop', @insertGreencartGraphic)
+      @browser.removeEventListener('exit', @removeBrowserListeners)
       @browser = null
 
     #
@@ -81,6 +82,9 @@ define (require) ->
 
     isNextView: (view) ->
       @associateViews.indexOf(view) == @associateViews.indexOf(@getCurrentView()) + 1
+
+    isPrevView: (view) ->
+      @associateViews.indexOf(view) == @associateViews.indexOf(@getCurrentView()) - 1
 
     clearPrevView: =>
       @getPrevView().addClass('hidden').removeClass('prev')
