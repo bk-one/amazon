@@ -20,4 +20,7 @@ define (require) ->
   assocs = window.assocs || []
   associates.add assocs
 
+  # pull up the curtain...
+  navigator.splashscreen.hide()
+
   greencart
