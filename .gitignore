@@ -4,3 +4,5 @@ www/js/app/**/*.js
 bower_components/
 node_modules/
 cordova/platforms/
+backgrounds.pxm
+icon.pxm

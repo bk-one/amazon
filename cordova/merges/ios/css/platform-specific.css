@@ -1,0 +1,13 @@
+body {
+    font: -apple-system-body;
+}
+
+.associate {
+    padding-top: 20px;
+}
+
+.associate h1 {
+    font-family: -apple-system-font;
+    font-weight: 100;
+    font-size: 2em;
+}

@@ -8,6 +8,8 @@ define (require) ->
     collections: {}
     views: {}
 
+  StatusBar.styleLightContent();
+
   associates = new Associates()
   AppData.associates = associates
 
@@ -17,5 +19,8 @@ define (require) ->
   # Pull the associates from the index.html for now
   assocs = window.assocs || []
   associates.add assocs
+
+  # pull up the curtain...
+  navigator.splashscreen.hide()
 
   greencart

@@ -17,9 +17,12 @@ define (require) ->
 
       @$el.hammer().on 'swipeleft', @swipeFwd
       @$el.hammer().on 'swiperight', @swipeBack
+      @$el.hammer().on 'swipeup', @swipeUp
+      @$el.hammer().on 'swipedown', @swipeDown
 
     addOne: (associate) ->
       view = new AssociateView(model: associate)
+      @listenTo view, 'search', @openBrowser
       view.render()
       @associateViews.push view
       if @isCurrentView(view)
@@ -32,6 +35,36 @@ define (require) ->
         view.addClass 'hidden'
 
       @$el.append view.el
+
+    #
+    # Browser opening stuff
+    #
+
+    openBrowser: (associateTag, searchTerm) ->
+      url = 'http://www.amazon.de/gp/aw/s/?k='+searchTerm+'&tag='+associateTag
+      @browser = window.open(url, '_blank', 'location=no,transitionstyle=fliphorizontal,closebuttoncaption=< Back to Greencart')
+      @browser.addEventListener('loadstop', @insertGreencartGraphic)
+      @browser.addEventListener('exit', @removeBrowserListeners)
+
+    insertGreencartGraphic: =>
+      @browser.insertCSS(
+        code: """
+        i.a-icon.a-nav-cart {
+          -webkit-background-size: cover !important;
+          background-image:url("http://www.adam-butler.com/images/amazon-greencart.png") !important;
+          background-position: 0 0 !important;
+        }
+        """
+      )
+
+    removeBrowserListeners: =>
+      @browser.removeEventListener('loadstop', @insertGreencartGraphic)
+      @browser.removeEventListener('exit', @removeBrowserListeners)
+      @browser = null
+
+    #
+    # Associate view manipulation
+    #
 
     getCurrentView: ->
       @currentView ?= @associateViews[0]
@@ -50,6 +83,9 @@ define (require) ->
     isNextView: (view) ->
       @associateViews.indexOf(view) == @associateViews.indexOf(@getCurrentView()) + 1
 
+    isPrevView: (view) ->
+      @associateViews.indexOf(view) == @associateViews.indexOf(@getCurrentView()) - 1
+
     clearPrevView: =>
       @getPrevView().addClass('hidden').removeClass('prev')
 
@@ -59,18 +95,36 @@ define (require) ->
     swipe: (isFwd = true) ->
       if isFwd and @getNextView()
         @currentView.removeClass('current').addClass('prev')
-        @getNextView().removeClass('next').addClass('current', @clearPrevView, this)
-        @currentView = @getNextView()
+        @getNextView().removeClass('next').addClass(
+          'current'
+          ->
+            @clearPrevView
+            @currentView = @getNextView()
+          this
+        )
+
       else if not isFwd and @getPrevView()
         @currentView.removeClass('current').addClass('next')
-        @getPrevView().removeClass('prev').addClass('current', @clearNextView, this)
-        @currentView = @getPrevView()
+        @getPrevView().removeClass('prev').addClass(
+          'current'
+          ->
+            @clearNextView
+            @currentView = @getPrevView()
+          this
+        )
+      this
 
     swipeFwd: =>
       @swipe(true)
 
     swipeBack: =>
       @swipe(false)
+
+    swipeUp: =>
+      @currentView.showDescription()
+
+    swipeDown: =>
+      @currentView.hideDescription()
 
   _.extend AppView.prototype, transformUtils
   AppView
