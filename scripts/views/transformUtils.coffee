@@ -16,7 +16,7 @@ define [], ->
       @transition = @$el.css("transition")  unless @transition
       @transition
 
-    setTransition: (transition) ->
+    setTransition: (transition = '') ->
       unless @transition is transition
         @transition = transition
         @$el.css "transition", transition
@@ -26,8 +26,14 @@ define [], ->
       @setTransition ""
       this
 
-    clearTransition: ->
-      @setTransition ""
+    clearTransition: (delay = false) ->
+      that = this
+      if delay
+        # magic number, boo
+        _.delay((-> that.setTransition ""), 10)
+      else
+        @setTransition ""
+
       this
 
     clearCSS: ->
@@ -52,6 +58,10 @@ define [], ->
         unless @isTransitionDisabled
           @isTransitionDisabled = true
           @setTransition "none"
+      else if callback is true
+        if @isTransitionDisabled
+          @isTransitionDisabled = false
+          @resetTransition()
       else
         if @isTransitionDisabled
           @resetTransition()

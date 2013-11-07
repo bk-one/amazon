@@ -31,6 +31,13 @@ define (require) ->
       @$el.html @template(@model.toJSON())
       @$el.find('.bg-holder').css 'backgroundImage', 'url('+@model.get('backgroundURL')+')'
       @$searchField = @$el.find('.amazon-text')
+
+      @$searchField.on('focus', =>
+        @trigger 'keyboardactive'
+      )
+      @$searchField.on('blur', =>
+        @trigger 'keyboardinactive'
+      )
       @$el.find('.amazon-form').on('submit', =>
         @trigger('search', @model.get('tag'), @$searchField.val()) if @$searchField.val().length > 0
         false
@@ -46,6 +53,12 @@ define (require) ->
       @$el.find('.blurred').css 'opacity', '0'
       @$el.find('.bg-holder').css 'top', '0'
       @$el.find('.description-holder').removeClass('description-holder-visible')
+
+    getSearchText: ->
+      return @$el.find('.amazon-text').val()
+
+    setSearchText: (text) ->
+      @$el.find('.amazon-text').val(text)
 
   _.extend AssociateView.prototype, transformUtils
 

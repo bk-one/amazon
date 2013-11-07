@@ -11,20 +11,34 @@ define (require) ->
     # the App already present in the HTML.
     el: "#app"
 
+    disableGestures: false
+
     initialize: ->
       @listenTo AppData.associates, "add", @addOne
       @associateViews = []
 
-      @$el.hammer().on 'swipeleft', @swipeFwd
-      @$el.hammer().on 'swiperight', @swipeBack
+      # @$el.hammer().on 'swipeleft', @swipeFwd
+      # @$el.hammer().on 'swiperight', @swipeBack
       @$el.hammer().on 'swipeup', @swipeUp
       @$el.hammer().on 'swipedown', @swipeDown
 
+      @$el.hammer().on 'dragstart', @dragStart
+      @$el.hammer().on 'dragleft dragright', @drag
+      @$el.hammer().on 'dragend', @dragEnd
+
     addOne: (associate) ->
       view = new AssociateView(model: associate)
+
       @listenTo view, 'search', @openBrowser
+      @listenTo view, 'keyboardactive', @disableDrag
+      @listenTo view, 'keyboardinactive', =>
+        @synchroniseSearchFields()
+        @enableDrag()
+
       view.render()
+
       @associateViews.push view
+
       if @isCurrentView(view)
         view.addClass 'current'
       else if @isNextView(view)
@@ -62,6 +76,10 @@ define (require) ->
       @browser.removeEventListener('exit', @removeBrowserListeners)
       @browser = null
 
+    synchroniseSearchFields: =>
+      text = @getCurrentView().getSearchText()
+      view.setSearchText(text) for view in @associateViews
+
     #
     # Associate view manipulation
     #
@@ -71,7 +89,7 @@ define (require) ->
 
     getNextView: ->
       index = @associateViews.indexOf(@getCurrentView())
-      if index < @associateViews.length then @associateViews[index+1] else null
+      if index < @associateViews.length-1 then @associateViews[index+1] else null
 
     getPrevView: ->
       index = @associateViews.indexOf(@getCurrentView())
@@ -101,6 +119,7 @@ define (require) ->
       nextView?.removeClass('hidden').addClass('next')
 
     swipe: (fwd = true) ->
+      return if @isDragging
       if fwd and @getNextView()
         @currentView.removeClass('current').addClass('prev')
         @getNextView()?.removeClass('next').addClass(
@@ -131,10 +150,95 @@ define (require) ->
       @swipe(false)
 
     swipeUp: =>
-      @currentView.showDescription()
+      unless @disableGestures
+        @currentView.showDescription()
 
     swipeDown: =>
-      @currentView.hideDescription()
+      unless @disableGestures
+        @currentView.hideDescription()
+
+    # dragging...
+
+    disableDrag: () =>
+      @disableGestures = true
+
+    enableDrag: () =>
+      @disableGestures = false
+
+    dragStart: (e) =>
+      if @disableGestures?
+        return
+      @isDragging = true
+
+    drag: (e) =>
+      unless @disableGestures
+        delta = @getDelta(e)
+        @translateViews(delta)
+
+    dragEnd: (e) =>
+      unless @disableGestures
+        delta = @getDelta(e)
+        if delta < -@getWidth() / 2
+          @translateViews(-@getWidth(), true, @concludeFwdDrag)
+        else if delta > @getWidth() / 2
+          @translateViews(@getWidth(), true, @concludeDrag)
+        else
+          @translateViews(0, true)
+        @isDragging = false
+
+
+    concludeFwdDrag: =>
+      @concludeDrag(true)
+
+    concludeDrag: (fwd) =>
+      if fwd
+        @currentView.setTransition('none').removeClass('current').addClass('prev').clearTransform().clearTransition(true)
+        @clearPrevView()?.setTransition('none').clearTransform().clearTransition(true)
+        @currentView = @getNextView().setTransition('none').removeClass('next').addClass('current').clearTransform().clearTransition(true)
+        @setNextView()
+      else
+        @currentView.setTransition('none').removeClass('current').addClass('next').clearTransform().clearTransition(true)
+        @clearNextView()?.setTransition('none').clearTransform().clearTransition(true)
+        @currentView = @getPrevView().setTransition('none').removeClass('prev').addClass('current').clearTransform().clearTransition(true)
+        @setPrevView()
+
+    getDelta: (event) ->
+      delta = event.gesture.deltaX
+
+      # can't go beyond first and last pages
+      if (delta > 0 and @isFirst()) or (delta < 0 and @isLast())
+        delta = delta / 3
+
+      delta
+
+    getWidth: () ->
+        if not @width?
+          @width = @$el.width()
+        @width
+
+    isFirst: ->
+      return @getPrevView() is null
+
+    isLast: ->
+      return @getNextView() is null
+
+    translateViews: (x, withTransition = false, callback = false) ->
+      # transform = 'translate3d('+x+'px, 0, 0)'
+      transform = 'translateX('+x+'px)'
+      @getPrevView()?.setTransform(transform, withTransition)
+      @getCurrentView().setTransform(transform, callback or withTransition)
+      @getNextView()?.setTransform(transform, withTransition)
+
+    clearTranslations: () ->
+      @getPrevView()?.resetTransition()
+      @getCurrentView().resetTransition()
+      @getNextView()?.resetTransition()
+      _.defer(->
+        @getPrevView()?.clearCSS()
+        @getCurrentView().clearCSS()
+        @getNextView()?.clearCSS()
+      )
+
 
   _.extend AppView.prototype, transformUtils
   AppView

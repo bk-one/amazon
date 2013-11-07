@@ -21,7 +21,7 @@ body {
 	font: 15px 'Helvetica Neue', Helvetica, Arial, sans-serif;
     font: -apple-system-body;
 	line-height: 1.46666;
-	background: #eaeaea url('../images/bg.png');
+	background-color: #000;
 	color: #4d4d4d;
 	width: 100%;
 	margin: 0 auto;
@@ -48,11 +48,12 @@ body {
     position: absolute;
     top: 0;
 
-    -webkit-transition: left 0.65s cubic-bezier(0.23,1,0.32,1);
+    -webkit-transition: left 0.65s cubic-bezier(0.23,1,0.32,1),
+                        -webkit-transform 0.3s cubic-bezier(0.23,1,0.32,1);
     -webkit-transform: translateZ(0);
 
-    border-left: 2px solid black;
-    border-right: 2px solid black;
+    border-left: 1px solid black;
+    border-right: 1px solid black;
 
     overflow: hidden;
 
@@ -61,7 +62,7 @@ body {
         width: 110%;
         position: absolute;
         top: 0;
-        margin: 0 -5%;
+        left: -5%;
         -webkit-transform: translateZ(0);
         /* background image url is set in the template */
         background-position: center top;
@@ -86,6 +87,7 @@ body {
         margin: 0;
         position: relative;
         z-index: 5;
+        -webkit-transform: translateZ(0);
     }
 
     .logo {
@@ -100,7 +102,7 @@ body {
         position: absolute;
         width: 100%;
         top: 50%;
-        -webkit-transform: translateY(-50%);
+        -webkit-transform: translate3d(0, -50%, 0);
 
         input[type="text"] {
             font-size: 1em;
