@@ -16,7 +16,9 @@ define (require) ->
                 <h1><%= name %></h1>
                 <form action="" id="amazon" class="amazon-form">
                   <input type="text" class="amazon-text" id="amazon-text" placeholder="What are you looking for?">
-                  <input type="submit" class="amazon-submit" value="Go">
+                  <button type="submit" class="amazon-submit">
+                    <i class="icon ion-search"></i>
+                  </button>
                 </form>
                 <div class="description-holder">
                   <div class="description"><%= description %></div>
