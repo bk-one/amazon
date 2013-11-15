@@ -1,8 +1,14 @@
 iphone
 www/js/app/**/*.js
+www/css/
 .sass-cache/
 bower_components/
 node_modules/
 cordova/platforms/
+cordova/www/images/
+cordova/www/js/
+cordova/www/css/
+temp/
 backgrounds.pxm
 icon.pxm
+cordova/www/fonts/

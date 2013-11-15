@@ -1,7 +1,13 @@
-document.addEventListener('deviceready', function() {
+var init = function() {
     // Requiring and return the CoffeeScript App module.
     require(['cs!csapp'], function (App) {
       return App;
     });
+};
 
-}, false);
+if (window.cordova) {
+    document.addEventListener('deviceready', init, false);
+} else {
+    init();
+}
+

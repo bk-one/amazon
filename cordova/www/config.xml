@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.adam-butler.greencart" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="co.greencart.ios.Greencart" version="28" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>Greencart</name>
     <description>
         Amazon shopping via non-profit associates
@@ -12,6 +12,10 @@
     <preference name="DisallowOverscroll" value="true" />
     <preference name="AutoHideSplashScreen" value="false" />
     <preference name="KeyboardShrinksView" value="false" />
+    <preference name="ShowSplashScreenSpinner" value="false" />
+    <preference name="MediaPlaybackRequiresUserAction" value="false" />
+    <preference name="AllowInlineMediaPlayback" value="true" />
+    <preference name="OpenAllWhitelistURLsInWebView" value="true" />
 
     <feature name="InAppBrowser">
         <param name="ios-package" value="CDVInAppBrowser" />
@@ -23,5 +27,13 @@
 
     <feature name="StatusBar">
         <param name="ios-package" value="CDVStatusBar" onload="true" />
+    </feature>
+
+    <feature name="Console">
+        <param name="ios-package" value="CDVLogger"/>
+    </feature>
+
+    <feature name="GAPlugin">
+        <param name="ios-package" value="com.adobe.plugins.GAPlugin"/>
     </feature>
 </widget>

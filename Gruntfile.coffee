@@ -101,6 +101,12 @@ module.exports = (grunt) ->
           dest: "<%= project.release %>/"
         ,
 
+          # Fonts
+          src: ['fonts/**']
+          expand: true
+          dest: "<%= project.release %>/"
+        ,
+
           # css
           cwd: 'www/'
           src: ['css/**']
