@@ -1,6 +1,6 @@
 define (require) ->
   Backbone = require 'backbone'
-  $.hammer = require 'jquery.hammer'
+  Hammer = require 'hammer'
 
   AppData = require 'appdata'
   AssociateView = require 'cs!views/associate'
@@ -17,14 +17,24 @@ define (require) ->
       @listenTo AppData.associates, "add", @addOne
       @associateViews = []
 
+      @screenWidth = @el.getBoundingClientRect().width
+      @menu = $('#menu')[0]
+
       # @$el.hammer().on 'swipeleft', @swipeFwd
       # @$el.hammer().on 'swiperight', @swipeBack
-      @$el.hammer().on 'swipeup', @swipeUp
-      @$el.hammer().on 'swipedown', @swipeDown
+      # @$el.hammer().on 'swipeup', @swipeUp
+      # @$el.hammer().on 'swipedown', @swipeDown
 
-      @$el.hammer().on 'dragstart', @dragStart
-      @$el.hammer().on 'dragleft dragright', @drag
-      @$el.hammer().on 'dragend', @dragEnd
+      hammer = Hammer(@el, {drag_lock_to_axis: true})
+      hammer.on 'dragstart', @dragStart
+      hammer.on 'dragleft dragright', @drag
+      hammer.on 'dragup dragdown', @drag
+      hammer.on 'dragend', @dragEnd
+
+      # @$el.hammer().on 'dragstart', @dragStart
+      # @$el.hammer().on 'dragleft dragright', @drag
+      # @$el.hammer().on 'dragup dragdown', @drag
+      # @$el.hammer().on 'dragend', @dragEnd
 
     addOne: (associate) ->
       view = new AssociateView(model: associate)
@@ -34,6 +44,7 @@ define (require) ->
       @listenTo view, 'keyboardinactive', =>
         @synchroniseSearchFields()
         @enableDrag()
+      @listenTo view, 'showmenu', @toggleMenu
 
       view.render()
 
@@ -54,31 +65,34 @@ define (require) ->
     # Browser opening stuff
     #
 
-    openBrowser: (associateTag, searchTerm) ->
-      url = 'http://www.amazon.de/gp/aw/s/?k='+searchTerm+'&tag='+associateTag
-      @browser = window.open(url, '_blank', 'location=no,transitionstyle=fliphorizontal,closebuttoncaption=< Back to Greencart')
-      @browser.addEventListener('loadstop', @insertGreencartGraphic)
-      @browser.addEventListener('exit', @removeBrowserListeners)
-
-    insertGreencartGraphic: =>
-      @browser.insertCSS(
-        code: """
-        i.a-icon.a-nav-cart {
-          -webkit-background-size: cover !important;
-          background-image:url("http://www.adam-butler.com/images/amazon-greencart.png") !important;
-          background-position: 0 0 !important;
-        }
-        """
-      )
-
-    removeBrowserListeners: =>
-      @browser.removeEventListener('loadstop', @insertGreencartGraphic)
-      @browser.removeEventListener('exit', @removeBrowserListeners)
-      @browser = null
+    openBrowser: (associate, searchTerm) ->
+      # send to google analytics
+      AppData.ga.trackEvent(AppData.gaSuccess, AppData.gaFailure, 'Search', associate.get('name'), searchTerm, 1)
+      url = 'http://www.amazon.de/gp/aw/s/?k='+searchTerm+'&tag='+associate.get('tag')
+      @browser = window.open(url, '_blank', 'location=no,transitionstyle=fliphorizontal,closebuttoncaption=< '+associate.get('name'))
 
     synchroniseSearchFields: =>
       text = @getCurrentView().getSearchText()
       view.setSearchText(text) for view in @associateViews
+
+    toggleMenu: =>
+      if @menuVisible
+        @closeMenu()
+      else
+        @openMenu()
+
+    openMenu: ->
+      @menu.style['opacity'] = 1
+      @getCurrentView().setTransform('translate3d(60%,0,0)')
+      @menuVisible = true
+      @disableDrag()
+
+    closeMenu: ->
+      @getCurrentView().setTransform('translate3d(0,0,0)', =>
+        @menu.style['opacity'] = 0
+      )
+      @menuVisible = false
+      @enableDrag()
 
     #
     # Associate view manipulation
@@ -119,7 +133,7 @@ define (require) ->
       nextView?.removeClass('hidden').addClass('next')
 
     swipe: (fwd = true) ->
-      return if @isDragging
+      return if @isXDragging
       if fwd and @getNextView()
         @currentView.removeClass('current').addClass('prev')
         @getNextView()?.removeClass('next').addClass(
@@ -166,25 +180,58 @@ define (require) ->
       @disableGestures = false
 
     dragStart: (e) =>
-      if @disableGestures?
-        return
-      @isDragging = true
+      unless @disableGestures
+        if e.gesture.direction is 'up' or e.gesture.direction is 'down'
+            @isYDragging = true
+        else if @getCurrentView().descriptionVisible isnt true
+          @isXDragging = true
+          requestAnimationFrame @moveCarousel
 
     drag: (e) =>
       unless @disableGestures
-        delta = @getDelta(e)
-        @translateViews(delta)
+        if @isYDragging
+          delta = e.gesture.deltaY
+          @getCurrentView().showDescriptionIncremental(e.gesture.direction, delta)
+          # @showDescription(delta)
+        else if @isXDragging
+          @xDelta = @getDelta(e)
+          # @translateViews(delta)
+
+    moveCarousel: =>
+      if @isXDragging
+        @translateViews @xDelta
+        requestAnimationFrame @moveCarousel
 
     dragEnd: (e) =>
       unless @disableGestures
-        delta = @getDelta(e)
-        if delta < -@getWidth() / 2
-          @translateViews(-@getWidth(), true, @concludeFwdDrag)
-        else if delta > @getWidth() / 2
-          @translateViews(@getWidth(), true, @concludeDrag)
-        else
-          @translateViews(0, true)
-        @isDragging = false
+        if @isYDragging
+          direction = e.gesture.interimDirection
+          if direction is 'up'
+            @getCurrentView().openDescription()
+          else
+            @getCurrentView().closeDescription()
+        else if @isXDragging
+          delta = @getDelta(e)
+          velocity = e.gesture.velocityX
+          direction = e.gesture.interimDirection
+          if (delta > 0 and @isFirst()) or (delta < 0 and @isLast())
+            @translateViews(0, true)
+
+          # if it was a swipe-like gesture, act on it
+          else if velocity > 0.5
+            if direction is 'left'
+              @translateViews(-@getWidth(), true, @concludeFwdDrag)
+            else
+              @translateViews(@getWidth(), true, @concludeDrag)
+
+          else if delta < -(@screenWidth / 2) and direction is 'left'
+            @translateViews(-@getWidth(), true, @concludeFwdDrag)
+          else if delta > (@screenWidth / 2) and direction is 'right'
+            @translateViews(@getWidth(), true, @concludeDrag)
+          else
+            @translateViews(0, true)
+        @isXDragging = false
+        @isYDragging = false
 
 
     concludeFwdDrag: =>
@@ -217,17 +264,24 @@ define (require) ->
         @width
 
     isFirst: ->
-      return @getPrevView() is null
+      return @associateViews.indexOf(@currentView) == 0
+      # return @getPrevView() is null
 
     isLast: ->
-      return @getNextView() is null
+      return @associateViews.indexOf(@currentView) == @associateViews.length - 1
+      # return @getNextView() is null
 
     translateViews: (x, withTransition = false, callback = false) ->
-      # transform = 'translate3d('+x+'px, 0, 0)'
-      transform = 'translateX('+x+'px)'
+      transform = 'translate3d('+x+'px, 0, 0)'
+      # transform = 'translateX('+x+'px)'
       @getPrevView()?.setTransform(transform, withTransition)
       @getCurrentView().setTransform(transform, callback or withTransition)
       @getNextView()?.setTransform(transform, withTransition)
+
+    # showDescription: (delta) ->
+    #   normalised = -delta / 300
+    #   normalised = if normalised > 1 then 1 else normalised
+    #   @getCurrentView().showDescriptionIncremental(normalised)
 
     clearTranslations: () ->
       @getPrevView()?.resetTransition()

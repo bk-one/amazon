@@ -55,7 +55,7 @@ define [], ->
     setTransform: (transform, callback, context, args) ->
       transition = undefined
       if callback is false
-        unless @isTransitionDisabled
+        if @isTransitionDisabled is false
           @isTransitionDisabled = true
           @setTransition "none"
       else if callback is true
@@ -67,7 +67,7 @@ define [], ->
           @resetTransition()
           @isTransitionDisabled = false
         @doPostTransitionCallback callback, context, args
-      @$el.css "-webkit-transform", transform
+      @$el[0].style['-webkit-transform'] = transform
       this
 
     clearTransform: (callback, context, args) ->

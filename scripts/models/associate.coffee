@@ -10,6 +10,7 @@ define (require) ->
       name: "Associate name"
       backgroundURL: ""
       logoURL: ""
+      shortDescription: "This is a short description"
       description: "Description goes here"
       tag: "amazon-tag"
 

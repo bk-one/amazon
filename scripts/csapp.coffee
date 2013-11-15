@@ -21,6 +21,20 @@ define (require) ->
   associates.add assocs
 
   # pull up the curtain...
-  navigator.splashscreen?.hide()
+  setTimeout(->
+    navigator.splashscreen?.hide()
+  , 200)
+
+  # initialise Google Analytics
+  gaPlugin = window.plugins.gaPlugin;
+  gaPlugin.init(->
+    AppData.ga = gaPlugin
+  , ->
+    console.log 'fail'
+  , 'UA-45758341-1', 10);
+
+  AppData.gaSuccess = ()->
+
+  AppData.gaFailure = ()->
 
   greencart
