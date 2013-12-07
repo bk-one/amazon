@@ -34,7 +34,4 @@
         <param name="ios-package" value="CDVLogger"/>
     </feature>
 
-    <feature name="GAPlugin">
-        <param name="ios-package" value="com.adobe.plugins.GAPlugin"/>
-    </feature>
 </widget>
