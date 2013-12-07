@@ -4,6 +4,8 @@ define (require) ->
 
   AppData = require 'appdata'
   AssociateView = require 'cs!views/associate'
+  MenuView = require 'cs!views/menu'
+  WizardView = require 'cs!views/wizard'
   transformUtils = require 'cs!views/transformUtils'
 
   class AppView extends Backbone.View
@@ -18,23 +20,19 @@ define (require) ->
       @associateViews = []
 
       @screenWidth = @el.getBoundingClientRect().width
-      @menu = $('#menu')[0]
+      @menuView = new MenuView
 
-      # @$el.hammer().on 'swipeleft', @swipeFwd
-      # @$el.hammer().on 'swiperight', @swipeBack
-      # @$el.hammer().on 'swipeup', @swipeUp
-      # @$el.hammer().on 'swipedown', @swipeDown
+      experienced = window.localStorage.getItem('green')
+      unless experienced?
+        @wizardView = new WizardView()
+        window.localStorage.setItem('green', 'cart')
 
-      hammer = Hammer(@el, {drag_lock_to_axis: true})
-      hammer.on 'dragstart', @dragStart
-      hammer.on 'dragleft dragright', @drag
-      hammer.on 'dragup dragdown', @drag
-      hammer.on 'dragend', @dragEnd
-
-      # @$el.hammer().on 'dragstart', @dragStart
-      # @$el.hammer().on 'dragleft dragright', @drag
-      # @$el.hammer().on 'dragup dragdown', @drag
-      # @$el.hammer().on 'dragend', @dragEnd
+      @hammer = Hammer(@el, {drag_lock_to_axis: true})
+      @hammer.on 'dragstart', @dragStart
+      @hammer.on 'dragleft dragright', @drag
+      @hammer.on 'dragup dragdown', @drag
+      @hammer.on 'dragend', @dragEnd
+      @hammer.on 'tap', @defocusInput
 
     addOne: (associate) ->
       view = new AssociateView(model: associate)
@@ -67,13 +65,23 @@ define (require) ->
 
     openBrowser: (associate, searchTerm) ->
       # send to google analytics
-      AppData.ga.trackEvent(AppData.gaSuccess, AppData.gaFailure, 'Search', associate.get('name'), searchTerm, 1)
+      # AppData.ga.trackEvent(AppData.gaSuccess, AppData.gaFailure, 'Search', associate.get('name'), searchTerm, 1)
+      window.ga('send', 'event', 'Search', associate.get('name'), searchTerm);
       url = 'http://www.amazon.de/gp/aw/s/?k='+searchTerm+'&tag='+associate.get('tag')
       @browser = window.open(url, '_blank', 'location=no,transitionstyle=fliphorizontal,closebuttoncaption=< '+associate.get('name'))
 
     synchroniseSearchFields: =>
       text = @getCurrentView().getSearchText()
       view.setSearchText(text) for view in @associateViews
+
+    defocusInput: (e) ->
+
+      if document.activeElement? and document.activeElement.type == 'text'
+        unless e.target.tagName is 'BUTTON' or e.target.tagName is 'INPUT'
+          $(document.activeElement).blur()
+        return false
+      else return true
+
 
     toggleMenu: =>
       if @menuVisible
@@ -82,15 +90,18 @@ define (require) ->
         @openMenu()
 
     openMenu: ->
-      @menu.style['opacity'] = 1
-      @getCurrentView().setTransform('translate3d(60%,0,0)')
-      @menuVisible = true
-      @disableDrag()
+      unless @disableGestures
+        @menuView.show()
+        @setTransform('translate3d(60%,0,0)')
+        # @el.addClass 'pointer-passthrough'
+        @menuVisible = true
+        @disableDrag()
 
     closeMenu: ->
-      @getCurrentView().setTransform('translate3d(0,0,0)', =>
-        @menu.style['opacity'] = 0
+      @setTransform('translate3d(0,0,0)', =>
+        @menuView.hide()
       )
+      # @el.removeClass 'pointer-passthrough'
       @menuVisible = false
       @enableDrag()
 
@@ -180,15 +191,18 @@ define (require) ->
       @disableGestures = false
 
     dragStart: (e) =>
-      unless @disableGestures
+      if not @disableGestures
         if e.gesture.direction is 'up' or e.gesture.direction is 'down'
             @isYDragging = true
         else if @getCurrentView().descriptionVisible isnt true
           @isXDragging = true
           requestAnimationFrame @moveCarousel
+      # else if @menuVisible
+      #   if e.gesture.direction is 'left'
+      #     @isXDragging = true
 
     drag: (e) =>
-      unless @disableGestures
+      if not @disableGestures
         if @isYDragging
           delta = e.gesture.deltaY
           @getCurrentView().showDescriptionIncremental(e.gesture.direction, delta)
@@ -196,6 +210,10 @@ define (require) ->
         else if @isXDragging
           @xDelta = @getDelta(e)
           # @translateViews(delta)
+      # else if @menuVisible and @isXDragging
+      #   # 60 is the % a menu displaces the view
+      #   delta = 60 + (event.gesture.deltaX / @getWidth() * 60)
+      #   @setTransform('translate3d('+delta+'%,0,0)')
 
     moveCarousel: =>
       if @isXDragging

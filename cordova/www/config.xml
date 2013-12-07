@@ -12,6 +12,7 @@
     <preference name="DisallowOverscroll" value="true" />
     <preference name="AutoHideSplashScreen" value="false" />
     <preference name="KeyboardShrinksView" value="false" />
+    <preference name="HideKeyboardFormAccessoryBar" value="true"/>
     <preference name="ShowSplashScreenSpinner" value="false" />
     <preference name="MediaPlaybackRequiresUserAction" value="false" />
     <preference name="AllowInlineMediaPlayback" value="true" />

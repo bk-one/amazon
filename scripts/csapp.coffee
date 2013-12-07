@@ -26,12 +26,18 @@ define (require) ->
   , 200)
 
   # initialise Google Analytics
-  gaPlugin = window.plugins.gaPlugin;
-  gaPlugin.init(->
-    AppData.ga = gaPlugin
-  , ->
-    console.log 'fail'
-  , 'UA-45758341-1', 10);
+  # gaPlugin = window.plugins.gaPlugin;
+  # gaPlugin.init(->
+  #   AppData.ga = gaPlugin
+  # , ->
+  #   console.log 'fail'
+  # , 'UA-45758341-1', 10);
+  window.ga('create', 'UA-46256651-1', {
+       'storage': 'none',
+       'clientId': device.uuid
+  })
+  window.ga('send', 'pageview', {'page': 'index.html'})
+
 
   AppData.gaSuccess = ()->
 

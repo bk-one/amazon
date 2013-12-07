@@ -32,6 +32,7 @@ define (require) ->
                 </div>
               </div>
             """
+    keyboardActive = false
 
     initialize: ->
       @template = _.template(@templ)
@@ -48,18 +49,26 @@ define (require) ->
 
       @$el.find('.bg-holder').css 'backgroundImage', 'url('+@model.get('backgroundURL')+')'
 
-      @$searchField.on('focus', =>
+      @$searchField.on 'focus', =>
+        @keyboardActive = true
         @trigger 'keyboardactive'
-      )
-      @$searchField.on('blur', =>
+
+      @$searchField.on 'blur', =>
+        @keyboardActive = false
         @trigger 'keyboardinactive'
-      )
-      @$el.find('.amazon-form').on('submit', =>
+
+      @$el.find('.amazon-form').on 'submit', =>
         @trigger('search', @model, @$searchField.val()) if @$searchField.val().length > 0
         false
-      )
 
-      Hammer(@logo).on 'tap', @toggleDescription
+
+      Hammer(@logo).on 'tap', =>
+        if @keyboardActive
+          console.log 'Keyboard Active'
+        else
+          console.log 'Keyboard Inactive'
+        @toggleDescription() unless @keyboardActive
+
       Hammer(@menuButton).on 'tap', =>
         @trigger 'showmenu'
 
@@ -128,6 +137,7 @@ define (require) ->
       @descriptionMoving = true
 
     toggleDescription: () =>
+      console.log 'toggling description'
       if @descriptionVisible
         @closeDescription()
       else
