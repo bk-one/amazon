@@ -32,6 +32,7 @@ define (require) ->
                 </div>
               </div>
             """
+    keyboardActive = false
 
     initialize: ->
       @template = _.template(@templ)
@@ -48,18 +49,22 @@ define (require) ->
 
       @$el.find('.bg-holder').css 'backgroundImage', 'url('+@model.get('backgroundURL')+')'
 
-      @$searchField.on('focus', =>
+      @$searchField.on 'focus', =>
+        @keyboardActive = true
         @trigger 'keyboardactive'
-      )
-      @$searchField.on('blur', =>
+
+      @$searchField.on 'blur', =>
+        @keyboardActive = false
         @trigger 'keyboardinactive'
-      )
-      @$el.find('.amazon-form').on('submit', =>
+
+      @$el.find('.amazon-form').on 'submit', =>
         @trigger('search', @model, @$searchField.val()) if @$searchField.val().length > 0
         false
-      )
 
-      Hammer(@logo).on 'tap', @toggleDescription
+
+      Hammer(@logo).on 'tap', =>
+        @toggleDescription() unless @keyboardActive
+
       Hammer(@menuButton).on 'tap', =>
         @trigger 'showmenu'
 
@@ -156,21 +161,19 @@ define (require) ->
       $(@descriptionHolder).css('-webkit-transform', '')
       $(@bgBlurred).css('opacity', '')
 
-      # include both, for iOS6 and 7 support
-      $(@descriptionHolder).bind "transitionend webkitTransitionEnd", @removeAnimation
+      $(@descriptionHolder).bind "transitionend webkitTransitionEnd", @postDescriptionAnimation
 
-      $(@descriptionHolder).addClass('animating')
       $(@descriptionHolder).removeClass('visible')
-      $(@descriptionHolder).removeClass('scrollable')
       $(@bgBlurred).removeClass('visible')
       $('.btn-description-button').removeClass('ion-ios7-arrow-down').addClass('ion-ios7-arrow-up')
       @descriptionVisible = false
       @descriptionMoving = false
 
-    removeAnimation: () =>
+    postDescriptionAnimation: () =>
       $(@descriptionHolder).removeClass('animating')
       $(@bgBlurred).removeClass('animating')
-      $(@descriptionHolder).unbind "transitionend webkitTransitionEnd", @removeAnimation
+      $(@descriptionHolder).removeClass('scrollable')
+      $(@descriptionHolder).unbind "transitionend webkitTransitionEnd", @postDescriptionAnimation
 
     hideDescription: ->
       @$el.find('.blurred').css 'opacity', '0'

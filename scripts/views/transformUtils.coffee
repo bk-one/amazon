@@ -8,7 +8,9 @@ define [], ->
       @setTransform "scale3D(" + scale + "," + scale + ",1)", callback, context, args
       this
 
-    setOpacity: (opacity) ->
+    setOpacity: (opacity, callback, context, args) ->
+      if callback
+        @doPostTransitionCallback callback, context, args
       @$el.css "opacity", opacity
       this
 
