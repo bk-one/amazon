@@ -143,44 +143,44 @@ define (require) ->
       nextView = nextView ? @getNextView()
       nextView?.removeClass('hidden').addClass('next')
 
-    swipe: (fwd = true) ->
-      return if @isXDragging
-      if fwd and @getNextView()
-        @currentView.removeClass('current').addClass('prev')
-        @getNextView()?.removeClass('next').addClass(
-          'current'
-          ->
-            @clearPrevView()
-            @currentView = @getNextView()
-            @setNextView()
-          this
-        )
+    # swipe: (fwd = true) ->
+    #   return if @isXDragging
+    #   if fwd and @getNextView()
+    #     @currentView.removeClass('current').addClass('prev')
+    #     @getNextView()?.removeClass('next').addClass(
+    #       'current'
+    #       ->
+    #         @clearPrevView()
+    #         @currentView = @getNextView()
+    #         @setNextView()
+    #       this
+    #     )
 
-      else if not fwd and @getPrevView()
-        @currentView.removeClass('current').addClass('next')
-        @getPrevView()?.removeClass('prev').addClass(
-          'current'
-          ->
-            @clearNextView()
-            @currentView = @getPrevView()
-            @setPrevView()
-          this
-        )
-      this
+    #   else if not fwd and @getPrevView()
+    #     @currentView.removeClass('current').addClass('next')
+    #     @getPrevView()?.removeClass('prev').addClass(
+    #       'current'
+    #       ->
+    #         @clearNextView()
+    #         @currentView = @getPrevView()
+    #         @setPrevView()
+    #       this
+    #     )
+    #   this
 
-    swipeFwd: =>
-      @swipe(true)
+    # swipeFwd: =>
+    #   @swipe(true)
 
-    swipeBack: =>
-      @swipe(false)
+    # swipeBack: =>
+    #   @swipe(false)
 
-    swipeUp: =>
-      unless @disableGestures
-        @currentView.showDescription()
+    # swipeUp: =>
+    #   unless @disableGestures
+    #     @currentView.showDescription()
 
-    swipeDown: =>
-      unless @disableGestures
-        @currentView.hideDescription()
+    # swipeDown: =>
+    #   unless @disableGestures
+    #     @currentView.hideDescription()
 
     # dragging...
 
@@ -197,9 +197,9 @@ define (require) ->
         else if @getCurrentView().descriptionVisible isnt true
           @isXDragging = true
           requestAnimationFrame @moveCarousel
-      # else if @menuVisible
-      #   if e.gesture.direction is 'left'
-      #     @isXDragging = true
+      else if @menuVisible
+        if e.gesture.direction is 'left'
+          @isXDragging = true
 
     drag: (e) =>
       if not @disableGestures
@@ -210,10 +210,11 @@ define (require) ->
         else if @isXDragging
           @xDelta = @getDelta(e)
           # @translateViews(delta)
-      # else if @menuVisible and @isXDragging
-      #   # 60 is the % a menu displaces the view
-      #   delta = 60 + (event.gesture.deltaX / @getWidth() * 60)
-      #   @setTransform('translate3d('+delta+'%,0,0)')
+      else if @menuVisible and @isXDragging
+        # 60 is the % a menu displaces the view
+        delta = 60 + (event.gesture.deltaX / @getWidth() * 60)
+        delta = 60 if delta > 60
+        @setTransform('translate3d('+delta+'%,0,0)')
 
     moveCarousel: =>
       if @isXDragging
@@ -221,7 +222,7 @@ define (require) ->
         requestAnimationFrame @moveCarousel
 
     dragEnd: (e) =>
-      unless @disableGestures
+      if not @disableGestures
         if @isYDragging
           direction = e.gesture.interimDirection
           if direction is 'up'
@@ -248,8 +249,10 @@ define (require) ->
             @translateViews(@getWidth(), true, @concludeDrag)
           else
             @translateViews(0, true)
-        @isXDragging = false
-        @isYDragging = false
+      else if @menuVisible and @isXDragging
+        @closeMenu()
+      @isXDragging = false
+      @isYDragging = false
 
 
     concludeFwdDrag: =>

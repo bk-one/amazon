@@ -63,10 +63,6 @@ define (require) ->
 
 
       Hammer(@logo).on 'tap', =>
-        if @keyboardActive
-          console.log 'Keyboard Active'
-        else
-          console.log 'Keyboard Inactive'
         @toggleDescription() unless @keyboardActive
 
       Hammer(@menuButton).on 'tap', =>
@@ -137,7 +133,6 @@ define (require) ->
       @descriptionMoving = true
 
     toggleDescription: () =>
-      console.log 'toggling description'
       if @descriptionVisible
         @closeDescription()
       else
@@ -166,21 +161,19 @@ define (require) ->
       $(@descriptionHolder).css('-webkit-transform', '')
       $(@bgBlurred).css('opacity', '')
 
-      # include both, for iOS6 and 7 support
-      $(@descriptionHolder).bind "transitionend webkitTransitionEnd", @removeAnimation
+      $(@descriptionHolder).bind "transitionend webkitTransitionEnd", @postDescriptionAnimation
 
-      $(@descriptionHolder).addClass('animating')
       $(@descriptionHolder).removeClass('visible')
-      $(@descriptionHolder).removeClass('scrollable')
       $(@bgBlurred).removeClass('visible')
       $('.btn-description-button').removeClass('ion-ios7-arrow-down').addClass('ion-ios7-arrow-up')
       @descriptionVisible = false
       @descriptionMoving = false
 
-    removeAnimation: () =>
+    postDescriptionAnimation: () =>
       $(@descriptionHolder).removeClass('animating')
       $(@bgBlurred).removeClass('animating')
-      $(@descriptionHolder).unbind "transitionend webkitTransitionEnd", @removeAnimation
+      $(@descriptionHolder).removeClass('scrollable')
+      $(@descriptionHolder).unbind "transitionend webkitTransitionEnd", @postDescriptionAnimation
 
     hideDescription: ->
       @$el.find('.blurred').css 'opacity', '0'
