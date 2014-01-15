@@ -23,15 +23,9 @@ define (require) ->
   # pull up the curtain...
   setTimeout(->
     navigator.splashscreen?.hide()
-  , 200)
+  , 300)
 
   # initialise Google Analytics
-  # gaPlugin = window.plugins.gaPlugin;
-  # gaPlugin.init(->
-  #   AppData.ga = gaPlugin
-  # , ->
-  #   console.log 'fail'
-  # , 'UA-45758341-1', 10);
   window.ga('create', 'UA-46256651-1', {
        'storage': 'none',
        'clientId': device.uuid

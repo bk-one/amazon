@@ -139,16 +139,15 @@ define (require) ->
         @openDescription()
 
     openDescription: () =>
-      unless @descriptionMoving is true or @descriptionVisible isnt true
+      if @descriptionMoving isnt true and @descriptionVisible is true
         return
+
+      $(@descriptionHolder).bind "transitionend webkitTransitionEnd", @postDescriptionOpen
       $(@descriptionHolder).addClass('animating')
       $(@descriptionHolder).addClass('visible')
-      $(@descriptionHolder).addClass('scrollable')
       $(@bgBlurred).addClass('animating')
       $(@bgBlurred).addClass('visible')
       $('.btn-description-button').removeClass('ion-ios7-arrow-up').addClass('ion-ios7-arrow-down')
-      @descriptionVisible = true
-      @descriptionMoving = false
 
       window.setTimeout(=>
         @descriptionHolder.style['-webkit-transform'] = ''
@@ -161,19 +160,29 @@ define (require) ->
       $(@descriptionHolder).css('-webkit-transform', '')
       $(@bgBlurred).css('opacity', '')
 
-      $(@descriptionHolder).bind "transitionend webkitTransitionEnd", @postDescriptionAnimation
+      $(@descriptionHolder).bind "transitionend webkitTransitionEnd", @postDescriptionClose
 
+      $(@descriptionHolder).addClass('animating')
       $(@descriptionHolder).removeClass('visible')
+      $(@bgBlurred).addClass('animating')
       $(@bgBlurred).removeClass('visible')
       $('.btn-description-button').removeClass('ion-ios7-arrow-down').addClass('ion-ios7-arrow-up')
-      @descriptionVisible = false
-      @descriptionMoving = false
 
-    postDescriptionAnimation: () =>
+    postDescriptionOpen: () =>
+      $(@descriptionHolder).removeClass('animating')
+      $(@bgBlurred).removeClass('animating')
+      $(@descriptionHolder).addClass('scrollable')
+      @descriptionVisible = true
+      @descriptionMoving = false
+      $(@descriptionHolder).unbind "transitionend webkitTransitionEnd", @postDescriptionOpen
+
+    postDescriptionClose: () =>
       $(@descriptionHolder).removeClass('animating')
       $(@bgBlurred).removeClass('animating')
       $(@descriptionHolder).removeClass('scrollable')
-      $(@descriptionHolder).unbind "transitionend webkitTransitionEnd", @postDescriptionAnimation
+      @descriptionVisible = false
+      @descriptionMoving = false
+      $(@descriptionHolder).unbind "transitionend webkitTransitionEnd", @postDescriptionClose
 
     hideDescription: ->
       @$el.find('.blurred').css 'opacity', '0'

@@ -16,7 +16,7 @@ define (require) ->
       if e.target.className.indexOf('why') > -1
         window.open('http://blog.greencart.co/post/67258633679', '_system');
       else if e.target.className.indexOf('how') > -1
-        window.open('', '_system');
+        window.open('http://greencart.co/wieviel', '_system');
       else if e.target.className.indexOf('share') > -1
         window.plugins.social.share('Shop consciously with Green Cart', 'http://greencart.co', 'www/images/icon@2X.png');
       else
